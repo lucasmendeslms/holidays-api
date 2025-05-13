@@ -1,6 +1,6 @@
 # Teste Técnico Backend - Treinamento de Skills 🚀
 
-Este repositório foi criado para **praticar e aprimorar habilidades de desenvolvimento backend**, resolvendo o desafio técnico proposto pela **Instruct**. O objetivo é implementar uma **API REST** que gerencia feriados nacionais, estaduais e municipais no Brasil, permitindo consultas, cadastros e remoções.
+Este repositório foi criado para **praticar e aprimorar habilidades de desenvolvimento backend**, resolvendo o desafio técnico proposto pela [**Instruct**](https://github.com/instruct-br/teste-backend-remoto-2020-07). O objetivo é implementar uma **API REST** que gerencia feriados nacionais, estaduais e municipais no Brasil, permitindo consultas, cadastros e remoções.
 
 ## 🎯 Objetivo
 
