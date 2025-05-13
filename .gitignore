@@ -1,0 +1,41 @@
+# Arquivos gerados pelo .NET
+bin/
+obj/
+*.suo
+*.user
+*.rsuser
+*.vspx
+*.vsscc
+*.vspscc
+*.cache
+*.mdb
+*.pdb
+*.log
+*.zip
+*.rar
+*.tar.gz
+*.exe
+*.dll
+
+# VS Code configurações
+.vscode/
+
+# Arquivos do sistema operacional
+Thumbs.db
+.DS_Store
+
+# Configurações de usuário no Visual Studio
+.vs/
+
+# Pacotes e dependências
+packages/
+node_modules/
+*.nupkg
+*.snupkg
+.nuget/
+
+# Configuração do Docker
+.dockerignore
+
+# Arquivo de anotações específico do projeto
+anotacoes.md
