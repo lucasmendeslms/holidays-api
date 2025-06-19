@@ -1,18 +1,18 @@
 namespace HolidayApi.ValueObjects
 {
-    public class Location
+    public class IbgeCode
     {
         private int _ibgeCodeLength;
 
-        public int IbgeCode { get; set; }
+        public int Id { get; set; }
         public bool IsMunicipality { get; }
         public bool IsState { get; }
 
-        public Location(int ibgeCode)
+        public IbgeCode(int ibgeCode)
         {
             _ibgeCodeLength = ibgeCode.ToString().Length;
 
-            IbgeCode = ibgeCode;
+            Id = ibgeCode;
             IsMunicipality = _ibgeCodeLength == 7;
             IsState = _ibgeCodeLength == 2;
 

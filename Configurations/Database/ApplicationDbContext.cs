@@ -8,6 +8,7 @@ namespace HolidayApi.Configurations.Database
         public DbSet<Holiday> Holiday { get; set; }
         public DbSet<Municipality> Municipality { get; set; }
         public DbSet<State> State { get; set; }
+        public DbSet<Country> Country { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

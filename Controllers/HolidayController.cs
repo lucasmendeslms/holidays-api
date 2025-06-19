@@ -1,5 +1,7 @@
 using System.Globalization;
 using HolidayApi.Data.DTOs;
+using HolidayApi.Services.Interfaces;
+using HolidayApi.Strategies;
 using HolidayApi.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,11 +11,11 @@ namespace HolidayApi.Controllers
     [ApiController]
     public class HolidayController : ControllerBase
     {
-        private readonly IHolidayService _service;
+        private readonly HolidayStrategyContext _holidayStrategyContext;
 
-        public HolidayController(IHolidayService service)
+        public HolidayController(HolidayStrategyContext holidayStrategyContext)
         {
-            _service = service;
+            _holidayStrategyContext = holidayStrategyContext;
         }
 
         [HttpGet]
@@ -21,9 +23,16 @@ namespace HolidayApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<HolidayDto>>> FindAllHolidays(int ibgeCode)
         {
-            Location location = new Location(ibgeCode);
+            IbgeCode validIbgeCode = new IbgeCode(ibgeCode);
 
-            var hollidaysList = await _service.FindAllHolidays(location);
+            var context = _holidayStrategyContext.SetStrategy(validIbgeCode);
+
+            if (context is null)
+            {
+                throw new Exception();
+            }
+
+            var hollidaysList = await context.FindAllHolidays(validIbgeCode.Id);
 
             return Ok(hollidaysList);
         }
@@ -31,12 +40,24 @@ namespace HolidayApi.Controllers
 
         [HttpPut("{date}")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult> RegisterHoliday(
+        public async Task<ActionResult<int>> RegisterHoliday(
             [FromQuery] int ibgeCode, [FromQuery] string date, [FromBody] string name)
         {
-            HolidayDate valueDate = new HolidayDate(date);
+            IbgeCode validIbgeCode = new IbgeCode(ibgeCode);
+            HolidayDate validDate = new HolidayDate(date);
 
-            return Created();
+            var context = _holidayStrategyContext.SetStrategy(validIbgeCode);
+
+            if (context is null)
+            {
+                throw new Exception();
+            }
+
+            return await context.RegisterHoliday(validIbgeCode.Id, validDate, name);
+
+            // https://www.linkedin.com/pulse/strategy-pattern-dependency-injection-clean-code-alkiviadis-skoutaris-s0oyf/
+
+            // https://dev.to/davidkroell/strategy-design-pattern-with-dependency-injection-7ba
         }
     }
 

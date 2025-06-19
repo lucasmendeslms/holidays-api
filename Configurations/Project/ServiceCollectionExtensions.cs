@@ -1,9 +1,12 @@
 using HolidayApi.Configurations.Database;
+using HolidayApi.Configurations.Settings;
 using HolidayApi.Repositories;
 using HolidayApi.Repositories.Interfaces;
 using HolidayApi.Services;
 using HolidayApi.Services.Interfaces;
+using HolidayApi.Strategies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace HolidayApi.Configurations
 {
@@ -11,7 +14,8 @@ namespace HolidayApi.Configurations
     {
         public static WebApplicationBuilder RegisterAppDependencies(this WebApplicationBuilder builder)
         {
-            builder.Services.AddDatabaseConfiguration(builder.Configuration)
+            builder.Services.AddAppSettingsConfiguration(builder.Configuration)
+                            .AddDatabaseConfiguration()
                             .AddServiceItems()
                             .AddEndpointsApiExplorer()
                             .AddSwaggerGen()
@@ -20,19 +24,29 @@ namespace HolidayApi.Configurations
             return builder;
         }
 
-        public static IServiceCollection AddDatabaseConfiguration(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddDatabaseConfiguration(this IServiceCollection services)
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            var provider = services.BuildServiceProvider();
+            var appSettings = provider.GetRequiredService<IOptions<AppSettings>>().Value;
+            var connectionString = appSettings.ConnectionStrings.Database
+            ?? throw new InvalidOperationException("Connection string not found.");
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
             return services;
         }
 
+        public static IServiceCollection AddAppSettingsConfiguration(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
+            return services;
+        }
+
         public static IServiceCollection AddServiceItems(this IServiceCollection services)
         {
-            services.AddScoped<IHolidayService, HolidayService>();
+            services.AddTransient<IHolidayStrategy, StateHolidayStrategy>();
+            // services.AddTransient<IHolidayStrategy, MunicipalityHolidayStrategy>();
+            services.AddTransient<HolidayStrategyContext>();
             services.AddScoped<IHolidayRepository, HolidayRepository>();
             return services;
         }

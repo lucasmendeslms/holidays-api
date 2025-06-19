@@ -1,12 +1,11 @@
 namespace HolidayApi.Data.Entities
 {
-    public class State
+    public class State : LocationBase
     {
-        public int Id { get; }
-        public required string Name { get; set; }
-        public required string Abbreviation { get; set; }
-        public required int IbgeCode { get; set; }
-        public required IEnumerable<Municipality> Municipalities { get; set; } = new List<Municipality>();
-        public required IEnumerable<Holiday> Holidays { get; set; } = new List<Holiday>();
+        public required string StateCode { get; set; }
+        // public required int CountryId { get; set; }
+        // public required Country Country { get; set; }
+        public IEnumerable<Municipality> Municipalities { get; set; } = new List<Municipality>();
+        public IEnumerable<Holiday> Holidays { get; set; } = new List<Holiday>();
     }
 }

@@ -11,6 +11,6 @@ namespace HolidayApi.Repositories.Interfaces
         Task<Holiday?> FindMunicipalityHoliday(int ibgeCode, HolidayDate date);
         Task<Holiday?> FindStateHoliday(int ibgeCode, HolidayDate date);
         Task<int> UpdateHolidayName(int id, string name);
-        Task<int> RegisterHoliday(int ibgeCode, Holiday date, string name);
+        Task<int> SaveStateHoliday(int stateId, HolidayDate date, string name);
     }
 }

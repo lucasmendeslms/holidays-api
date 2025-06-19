@@ -1,3 +1,4 @@
+using HolidayApi.Configurations.Database;
 using HolidayApi.Data.DTOs;
 using HolidayApi.Data.Entities;
 using HolidayApi.Repositories.Interfaces;
@@ -15,23 +16,26 @@ namespace HolidayApi.Repositories
             _context = context;
         }
 
+        public async Task<int> UpdateHolidayName(int id, string name)
+        {
+            if (await _context.Holiday.FindAsync(id) is Holiday found)
+            {
+                found.Name = name;
+
+                await _context.SaveChangesAsync();
+
+                return StatusCodes.Status200OK;
+            }
+
+            return StatusCodes.Status500InternalServerError;
+        }
+
+        //Municipality
+
         public async Task<IEnumerable<HolidayDto>> FindAllMunicipalityHolidays(int ibgeCode)
         {
             var holidays = await _context.Municipality
                 .Where(h => h.IbgeCode == ibgeCode)
-                .Select(h => new HolidayDto
-                {
-                    Name = h.Name
-                })
-                .ToListAsync();
-
-            return holidays.AsEnumerable();
-        }
-
-        public async Task<IEnumerable<HolidayDto>> FindAllStateHolidays(int ibgeCode)
-        {
-            var holidays = await _context.Holiday
-                .Where(h => h.States != null && h.States.Any(s => s.IbgeCode == ibgeCode))
                 .Select(h => new HolidayDto
                 {
                     Name = h.Name
@@ -47,11 +51,26 @@ namespace HolidayApi.Repositories
                 .Where(
                     h => h.Day == date.Date.Day &&
                     h.Month == date.Date.Month &&
-                    h.Municipalities != null &&
-                    h.Municipalities.Any(m => m.IbgeCode == ibgeCode))
+                    h.Municipality != null &&
+                    h.Municipality.IbgeCode == ibgeCode)
                 .FirstOrDefaultAsync();
 
             return holiday;
+        }
+
+        //State
+
+        public async Task<IEnumerable<HolidayDto>> FindAllStateHolidays(int ibgeCode)
+        {
+            var holidays = await _context.Holiday
+                .Where(h => h.State != null && h.State.IbgeCode == ibgeCode)
+                .Select(h => new HolidayDto
+                {
+                    Name = h.Name
+                })
+                .ToListAsync();
+
+            return holidays.AsEnumerable();
         }
 
         public async Task<Holiday?> FindStateHoliday(int ibgeCode, HolidayDate date)
@@ -60,28 +79,34 @@ namespace HolidayApi.Repositories
                     .Where(h =>
                         h.Day == date.Date.Day &&
                         h.Month == date.Date.Month &&
-                        h.States != null &&
-                        h.States.Any(s => s.IbgeCode == ibgeCode))
+                        h.State != null &&
+                        h.State.IbgeCode == ibgeCode)
                     .FirstOrDefaultAsync();
         }
 
-        public async Task<int> UpdateHolidayName(int id, string name)
+        public async Task<int> SaveStateHoliday(int stateId, HolidayDate date, string name)
         {
-            if (await _context.Holiday.FindAsync(id) is Holiday found)
+            try
             {
-                found.Name = name;
+                Holiday holiday = new Holiday
+                {
+                    Name = name,
+                    Day = date.Date.Day,
+                    Month = date.Date.Month,
+                    Year = date.Date.Year,
+                    Type = HolidayType.State,
+                    StateId = stateId
+                };
 
+                await _context.Holiday.AddAsync(holiday);
                 await _context.SaveChangesAsync();
 
-                return StatusCodes.Status200OK;
+                return StatusCodes.Status201Created;
             }
-
-            return StatusCodes.Status500InternalServerError;
-        }
-
-        public async Task<int> RegisterHoliday(int ibgeCode, DateTime date, string name)
-        {
-
+            catch (Exception teste)
+            {
+                throw new Exception(teste.Message);
+            }
         }
     }
 }
