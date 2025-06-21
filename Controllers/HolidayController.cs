@@ -40,8 +40,7 @@ namespace HolidayApi.Controllers
 
         [HttpPut("{date}")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<int>> RegisterHoliday(
-            [FromQuery] int ibgeCode, [FromQuery] string date, [FromBody] string name)
+        public async Task<ActionResult<int>> RegisterHoliday(int ibgeCode, string date, [FromBody] string name)
         {
             IbgeCode validIbgeCode = new IbgeCode(ibgeCode);
             HolidayDate validDate = new HolidayDate(date);
@@ -50,7 +49,7 @@ namespace HolidayApi.Controllers
 
             if (context is null)
             {
-                throw new Exception();
+                throw new Exception("Failed to recover the strategy context | Holiday Controller");
             }
 
             return await context.RegisterHoliday(validIbgeCode.Id, validDate, name);

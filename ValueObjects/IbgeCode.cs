@@ -11,12 +11,11 @@ namespace HolidayApi.ValueObjects
         public IbgeCode(int ibgeCode)
         {
             _ibgeCodeLength = ibgeCode.ToString().Length;
-
             Id = ibgeCode;
             IsMunicipality = _ibgeCodeLength == 7;
             IsState = _ibgeCodeLength == 2;
 
-            if (_ibgeCodeLength != 2 || _ibgeCodeLength != 7)
+            if (_ibgeCodeLength != 2 && _ibgeCodeLength != 7)
             {
                 throw new ArgumentException($"IbgeCode inválido: {ibgeCode}");
             }

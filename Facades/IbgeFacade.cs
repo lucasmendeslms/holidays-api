@@ -1,6 +1,6 @@
 using HolidayApi.Configurations.Settings;
 using HolidayApi.Data.DTOs;
-using HolidayApi.Data.ModelResponse;
+using HolidayApi.Data.ExternalModels;
 using HolidayApi.Facades.Interfaces;
 
 
@@ -27,14 +27,14 @@ namespace HolidayApi.Facades
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new Exception();
+                    throw new Exception("Failed to get a state in Ibge API | GetIbgeStateAsync");
                 }
 
                 var modelResponse = await response.Content.ReadFromJsonAsync<StateModelResponse>();
 
                 if (modelResponse is null)
                 {
-                    throw new Exception();
+                    throw new Exception("Failed to convert the response of Ibge API to JSON | GetIbgeStateAsync");
                 }
 
                 StateDto state = new StateDto
@@ -49,7 +49,7 @@ namespace HolidayApi.Facades
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                throw new Exception($"Failed to execute the GetIbgeStateAsync function | {e.Message}");
             }
 
         }

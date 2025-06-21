@@ -1,12 +1,12 @@
 using HolidayApi.Data.DTOs;
 using HolidayApi.Data.Entities;
-using HolidayApi.Data.ModelResponse;
 using HolidayApi.Facades.Interfaces;
 using HolidayApi.Repositories.Interfaces;
+using HolidayApi.Services.Interfaces;
 
 namespace HolidayApi.Services
 {
-    public class StateService
+    public class StateService : IStateService
     {
         private readonly IStateRepository _stateRepository;
         private readonly IIbgeFacade _ibgeFacade;

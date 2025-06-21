@@ -103,9 +103,9 @@ namespace HolidayApi.Repositories
 
                 return StatusCodes.Status201Created;
             }
-            catch (Exception teste)
+            catch (Exception e)
             {
-                throw new Exception(teste.Message);
+                throw new Exception($"Failed to save a new holiday | SaveStateHoliday | {e.Message}");
             }
         }
     }

@@ -14,6 +14,7 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     dbContext.Database.EnsureCreated();
+    // dbContext.Database.EnsureDeleted();
 }
 
 // Configure the HTTP request pipeline.
@@ -27,8 +28,7 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 
-app.UseMiddleware<ErrorHandlingMiddleware>()
-    .UseMiddleware<IbgeRedirectMiddleware>();
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.Run();
 
