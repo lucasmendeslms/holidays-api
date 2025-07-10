@@ -54,6 +54,46 @@ namespace HolidayApi.Facades
 
         }
 
+        public async Task<MunicipalityReadDto> GetIbgeMunicipalityAsync(int ibgeCode)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"{_appSettings.ApiSettings.IbgeApi.MunicipalityEndpoint}/{ibgeCode}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception("Failed to get a municipality in Ibge API | GetIbgeMunicipalityAsync");
+                }
+
+                var modelResponse = await response.Content.ReadFromJsonAsync<MunicipalityModelResponse>();
+
+                if (modelResponse is null)
+                {
+                    throw new Exception("Failed to convert the response of Ibge API to JSON | GetIbgeMunicipalityAsync");
+                }
+
+                MunicipalityReadDto municipality = new MunicipalityReadDto
+                {
+                    IbgeCode = modelResponse.Id,
+                    Name = modelResponse.Name,
+                    State = new StateDto
+                    {
+                        IbgeCode = modelResponse.Microregion.Mesoregion.State.Id,
+                        StateCode = modelResponse.Microregion.Mesoregion.State.StateCode,
+                        Name = modelResponse.Microregion.Mesoregion.State.Name
+                    }
+                };
+
+                return municipality;
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Failed to execute the GetIbgeStateAsync function | {e.Message}");
+            }
+
+        }
+
     }
 
 }

@@ -5,7 +5,7 @@ namespace HolidayApi.Data.ExternalModels
     public class StateModelResponse
     {
         [JsonPropertyName("id")]
-        public required int Id { get; set; }
+        public int Id { get; set; }
 
         [JsonPropertyName("nome")]
         public required string Name { get; set; }
@@ -14,13 +14,13 @@ namespace HolidayApi.Data.ExternalModels
         public required string StateCode { get; set; }
 
         [JsonPropertyName("regiao")]
-        public required IbgeRegion Region { get; set; }
+        public required RegionState Region { get; set; }
     }
 
-    public class IbgeRegion
+    public class RegionState
     {
         [JsonPropertyName("id")]
-        public required int Id { get; set; }
+        public int Id { get; set; }
 
         [JsonPropertyName("nome")]
         public required string Name { get; set; }

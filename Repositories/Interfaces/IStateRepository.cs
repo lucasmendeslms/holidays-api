@@ -5,7 +5,7 @@ namespace HolidayApi.Repositories.Interfaces
 {
     public interface IStateRepository
     {
-        Task<State?> FindStateAsync(int ibgeCode);
+        Task<int> FindStateIdAsync(int ibgeCode);
         Task<int> SaveState(StateDto state);
     }
 }

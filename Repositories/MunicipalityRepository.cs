@@ -6,35 +6,35 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HolidayApi.Repositories
 {
-    public class StateRepository : IStateRepository
+    public class MunicipalityRepository : IMunicipalityRepository
     {
         private readonly ApplicationDbContext _context;
 
-        public StateRepository(ApplicationDbContext context)
+        public MunicipalityRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task<int> FindStateIdAsync(int ibgeCode)
+        public async Task<int> FindMunicipalityIdAsync(int ibgeCode)
         {
-            return await _context.State
-                            .Where(s => s.IbgeCode == ibgeCode)
-                            .Select(s => s.Id)
+            return await _context.Municipality
+                            .Where(m => m.IbgeCode == ibgeCode)
+                            .Select(m => m.Id)
                             .FirstOrDefaultAsync();
         }
 
-        public async Task<int> SaveState(StateDto state)
+        public async Task<int> SaveMunicipality(MunicipalityDto municipality)
         {
             try
             {
-                State data = new State
+                Municipality data = new Municipality
                 {
-                    Name = state.Name,
-                    IbgeCode = state.IbgeCode,
-                    StateCode = state.StateCode
+                    Name = municipality.Name,
+                    IbgeCode = municipality.IbgeCode,
+                    StateId = municipality.StateId
                 };
 
-                await _context.State.AddAsync(data);
+                await _context.Municipality.AddAsync(data);
                 await _context.SaveChangesAsync();
 
                 return data.Id;

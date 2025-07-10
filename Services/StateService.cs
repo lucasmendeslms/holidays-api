@@ -17,18 +17,28 @@ namespace HolidayApi.Services
             _ibgeFacade = ibgeFacade;
         }
 
+        public async Task<int> FindStateIdAsync(int ibgeCode)
+        {
+            return await _stateRepository.FindStateIdAsync(ibgeCode);
+        }
+
+        public async Task<int> SaveState(StateDto state)
+        {
+            return await _stateRepository.SaveState(state);
+        }
+
         public async Task<int> GetStateIdAsync(int ibgeCode)
         {
-            State? state = await _stateRepository.FindStateAsync(ibgeCode);
+            int stateId = await FindStateIdAsync(ibgeCode);
 
-            if (state is not null)
+            if (stateId is not 0)
             {
-                return state.Id;
+                return stateId;
             }
 
             StateDto ibgeApiResponse = await _ibgeFacade.GetIbgeStateAsync(ibgeCode);
 
-            return await _stateRepository.SaveState(ibgeApiResponse);
+            return await SaveState(ibgeApiResponse);
         }
     }
 }

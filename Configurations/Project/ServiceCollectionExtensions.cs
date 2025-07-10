@@ -42,10 +42,13 @@ namespace HolidayApi.Configurations
         public static IServiceCollection AddServiceItems(this IServiceCollection services)
         {
             services.AddScoped<IHolidayStrategy, StateHolidayStrategy>();
+            services.AddScoped<IHolidayStrategy, MunicipalityHolidayStrategy>();
+            services.AddScoped<IMunicipalityRepository, MunicipalityRepository>();
             services.AddScoped<IStateRepository, StateRepository>();
+            services.AddScoped<IMunicipalityRepository, MunicipalityRepository>();
             services.AddScoped<IIbgeFacade, IbgeFacade>();
             services.AddScoped<IStateService, StateService>();
-            // services.AddTransient<IHolidayStrategy, MunicipalityHolidayStrategy>();
+            services.AddScoped<IMunicipalityService, MunicipalityService>();
             services.AddTransient<HolidayStrategyContext>();
             services.AddScoped<IHolidayRepository, HolidayRepository>();
             return services;

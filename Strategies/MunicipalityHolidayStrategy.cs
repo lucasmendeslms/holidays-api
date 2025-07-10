@@ -1,0 +1,47 @@
+using HolidayApi.Data.DTOs;
+using HolidayApi.Data.Entities;
+using HolidayApi.Repositories.Interfaces;
+using HolidayApi.Services.Interfaces;
+using HolidayApi.ValueObjects;
+
+namespace HolidayApi.Strategies
+{
+    public class MunicipalityHolidayStrategy : IHolidayStrategy
+    {
+
+        private readonly IHolidayRepository _holidayRepository;
+        private readonly IMunicipalityService _municipalityService;
+
+        public bool AppliesTo(IbgeCode ibgeCode) => ibgeCode.IsMunicipality;
+
+        public MunicipalityHolidayStrategy(IHolidayRepository holidayRepository, IMunicipalityService municipalityService)
+        {
+            _holidayRepository = holidayRepository;
+            _municipalityService = municipalityService;
+        }
+
+        public async Task<IEnumerable<HolidayDto>> FindAllHolidays(int ibgeCode)
+        {
+            return await _holidayRepository.FindAllMunicipalityHolidays(ibgeCode);
+        }
+
+        public async Task<int> RegisterHoliday(int ibgeCode, HolidayDate date, string name)
+        {
+            Holiday? holiday = await _holidayRepository.FindMunicipalityHoliday(ibgeCode, date);
+
+            if (holiday is not null)
+            {
+                if (holiday.Name != name)
+                {
+                    return await _holidayRepository.UpdateHolidayName(holiday.Id, name);
+                }
+
+                return StatusCodes.Status200OK;
+            }
+
+            int municipalityId = await _municipalityService.GetMunicipalityIdAsync(ibgeCode);
+
+            return await _holidayRepository.SaveMunicipalityHoliday(municipalityId, date, name);
+        }
+    }
+}

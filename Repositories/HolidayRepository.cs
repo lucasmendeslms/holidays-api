@@ -108,5 +108,30 @@ namespace HolidayApi.Repositories
                 throw new Exception($"Failed to save a new holiday | SaveStateHoliday | {e.Message}");
             }
         }
+
+        public async Task<int> SaveMunicipalityHoliday(int municipalityId, HolidayDate date, string name)
+        {
+            try
+            {
+                Holiday holiday = new Holiday
+                {
+                    Name = name,
+                    Day = date.Date.Day,
+                    Month = date.Date.Month,
+                    Year = date.Date.Year,
+                    Type = HolidayType.Municipal,
+                    MunicipalityId = municipalityId
+                };
+
+                await _context.Holiday.AddAsync(holiday);
+                await _context.SaveChangesAsync();
+
+                return StatusCodes.Status201Created;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Failed to save a new holiday | SaveMunicipalityHoliday | {e.Message}");
+            }
+        }
     }
 }
