@@ -36,10 +36,7 @@ namespace HolidayApi.Repositories
         {
             var holidays = await _context.Municipality
                 .Where(h => h.IbgeCode == ibgeCode)
-                .Select(h => new HolidayDto
-                {
-                    Name = h.Name
-                })
+                .Select(h => new HolidayDto(h.Name))
                 .ToListAsync();
 
             return holidays.AsEnumerable();
@@ -47,15 +44,13 @@ namespace HolidayApi.Repositories
 
         public async Task<Holiday?> FindMunicipalityHoliday(int ibgeCode, HolidayDate date)
         {
-            var holiday = await _context.Holiday
+            return await _context.Holiday
                 .Where(
                     h => h.Day == date.Date.Day &&
                     h.Month == date.Date.Month &&
                     h.Municipality != null &&
                     h.Municipality.IbgeCode == ibgeCode)
                 .FirstOrDefaultAsync();
-
-            return holiday;
         }
 
         //State
@@ -64,10 +59,7 @@ namespace HolidayApi.Repositories
         {
             var holidays = await _context.Holiday
                 .Where(h => h.State != null && h.State.IbgeCode == ibgeCode)
-                .Select(h => new HolidayDto
-                {
-                    Name = h.Name
-                })
+                .Select(h => new HolidayDto(h.Name))
                 .ToListAsync();
 
             return holidays.AsEnumerable();
@@ -93,7 +85,6 @@ namespace HolidayApi.Repositories
                     Name = name,
                     Day = date.Date.Day,
                     Month = date.Date.Month,
-                    Year = date.Date.Year,
                     Type = HolidayType.State,
                     StateId = stateId
                 };
@@ -118,7 +109,6 @@ namespace HolidayApi.Repositories
                     Name = name,
                     Day = date.Date.Day,
                     Month = date.Date.Month,
-                    Year = date.Date.Year,
                     Type = HolidayType.Municipal,
                     MunicipalityId = municipalityId
                 };

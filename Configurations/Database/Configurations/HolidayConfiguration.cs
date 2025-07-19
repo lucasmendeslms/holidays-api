@@ -13,7 +13,6 @@ namespace HolidayApi.Configurations.Database
             builder.Property(p => p.Name).HasMaxLength(200).IsRequired();
             builder.Property(p => p.Day).IsRequired();
             builder.Property(p => p.Month).IsRequired();
-            builder.Property(p => p.Year);
             builder.Property(p => p.Type);
         }
     }

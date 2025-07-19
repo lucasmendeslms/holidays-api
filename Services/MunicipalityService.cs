@@ -18,6 +18,7 @@ namespace HolidayApi.Services
             _ibgeFacade = ibgeFacade;
             _stateService = stateService;
         }
+
         public async Task<int> GetMunicipalityIdAsync(int ibgeCode)
         {
             int municipalityId = await _municipalityRepository.FindMunicipalityIdAsync(ibgeCode);
@@ -36,14 +37,7 @@ namespace HolidayApi.Services
                 stateId = await _stateService.SaveState(ibgeApiResponse.State);
             }
 
-            MunicipalityDto municipality = new MunicipalityDto
-            {
-                IbgeCode = ibgeApiResponse.IbgeCode,
-                Name = ibgeApiResponse.Name,
-                StateId = stateId
-            };
-
-            return await _municipalityRepository.SaveMunicipality(municipality);
+            return await _municipalityRepository.SaveMunicipality(new MunicipalityDto(ibgeApiResponse.Name, ibgeApiResponse.IbgeCode, stateId));
         }
     }
 }

@@ -27,12 +27,7 @@ namespace HolidayApi.Repositories
         {
             try
             {
-                Municipality data = new Municipality
-                {
-                    Name = municipality.Name,
-                    IbgeCode = municipality.IbgeCode,
-                    StateId = municipality.StateId
-                };
+                Municipality data = municipality;
 
                 await _context.Municipality.AddAsync(data);
                 await _context.SaveChangesAsync();

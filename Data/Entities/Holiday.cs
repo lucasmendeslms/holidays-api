@@ -6,7 +6,6 @@ namespace HolidayApi.Data.Entities
         public required string Name { get; set; }
         public int Day { get; set; }
         public int Month { get; set; }
-        public int Year { get; set; }
         public HolidayType Type { get; set; }
         public int? StateId { get; set; }
         public int? MunicipalityId { get; set; }
