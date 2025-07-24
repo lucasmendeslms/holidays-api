@@ -32,14 +32,25 @@ namespace HolidayApi.Repositories
 
         //Municipality
 
-        public async Task<IEnumerable<HolidayDto>> FindAllMunicipalityHolidays(int ibgeCode)
+        public async Task<IEnumerable<HolidayDetailDto>> FindAllMunicipalityHolidaysAsync(int ibgeCode)
         {
-            var holidays = await _context.Municipality
-                .Where(h => h.IbgeCode == ibgeCode)
-                .Select(h => new HolidayDto(h.Name))
+            var holidays = await _context.Holiday
+                .Join(
+                    _context.Municipality,
+                    holiday => holiday.MunicipalityId,
+                    municipality => municipality.Id,
+                    (holiday, municipality) => new { holiday, municipality }
+                )
+                .Where(municipalHoliday => municipalHoliday.municipality.IbgeCode == ibgeCode)
+                .Select(municipalHoliday => new HolidayDetailDto(
+                    municipalHoliday.holiday.Name,
+                    municipalHoliday.holiday.Month,
+                    municipalHoliday.holiday.Day,
+                    municipalHoliday.holiday.Type
+                ))
                 .ToListAsync();
 
-            return holidays.AsEnumerable();
+            return holidays;
         }
 
         public async Task<Holiday?> FindMunicipalityHoliday(int ibgeCode, HolidayDate date)
@@ -55,11 +66,22 @@ namespace HolidayApi.Repositories
 
         //State
 
-        public async Task<IEnumerable<HolidayDto>> FindAllStateHolidays(int ibgeCode)
+        public async Task<IEnumerable<HolidayDetailDto>> FindAllStateHolidays(int ibgeCode)
         {
             var holidays = await _context.Holiday
-                .Where(h => h.State != null && h.State.IbgeCode == ibgeCode)
-                .Select(h => new HolidayDto(h.Name))
+                .Join(
+                    _context.State,
+                    holiday => holiday.StateId,
+                    state => state.Id,
+                    (holiday, state) => new { holiday, state }
+                )
+                .Where(stateHoliday => stateHoliday.state.IbgeCode == ibgeCode)
+                .Select(stateHoliday => new HolidayDetailDto(
+                    stateHoliday.holiday.Name,
+                    stateHoliday.holiday.Month,
+                    stateHoliday.holiday.Day,
+                    stateHoliday.holiday.Type
+                ))
                 .ToListAsync();
 
             return holidays.AsEnumerable();

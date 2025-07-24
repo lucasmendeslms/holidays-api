@@ -11,10 +11,6 @@ namespace HolidayApi.Strategies
             _holidayStrategies = strategies;
         }
 
-        public IHolidayStrategy? SetStrategy(IbgeCode ibgeCode)
-        {
-            var strategy = _holidayStrategies.FirstOrDefault(s => s.AppliesTo(ibgeCode));
-            return strategy;
-        }
+        public IHolidayStrategy? SetStrategy(IbgeCode ibgeCode) => _holidayStrategies.FirstOrDefault(s => s.AppliesTo(ibgeCode));
     }
 }

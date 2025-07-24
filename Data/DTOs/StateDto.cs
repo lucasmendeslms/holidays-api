@@ -4,9 +4,9 @@ namespace HolidayApi.Data.DTOs
 {
     public class StateDto
     {
-        public int IbgeCode { get; set; }
-        public string StateCode { get; set; }
-        public string Name { get; set; }
+        public int IbgeCode { get; }
+        public string StateCode { get; }
+        public string Name { get; }
 
         public StateDto(int ibgeCode, string stateCode, string name)
         {

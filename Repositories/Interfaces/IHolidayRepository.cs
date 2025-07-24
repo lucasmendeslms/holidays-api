@@ -6,8 +6,8 @@ namespace HolidayApi.Repositories.Interfaces
 {
     public interface IHolidayRepository
     {
-        Task<IEnumerable<HolidayDto>> FindAllStateHolidays(int ibgeCode);
-        Task<IEnumerable<HolidayDto>> FindAllMunicipalityHolidays(int ibgeCode);
+        Task<IEnumerable<HolidayDetailDto>> FindAllStateHolidays(int ibgeCode);
+        Task<IEnumerable<HolidayDetailDto>> FindAllMunicipalityHolidaysAsync(int ibgeCode);
         Task<Holiday?> FindMunicipalityHoliday(int ibgeCode, HolidayDate date);
         Task<Holiday?> FindStateHoliday(int ibgeCode, HolidayDate date);
         Task<int> UpdateHolidayName(int id, string name);

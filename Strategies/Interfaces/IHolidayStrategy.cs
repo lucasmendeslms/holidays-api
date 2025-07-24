@@ -6,8 +6,8 @@ namespace HolidayApi.Strategies
     public interface IHolidayStrategy
     {
         bool AppliesTo(IbgeCode ibgeCode);
-        Task<IEnumerable<HolidayDto>> FindAllHolidays(int ibgeCode);
-        Task<int> RegisterHoliday(int ibgeCode, HolidayDate date, string name);
-        // Task<HolidayDto?> FindHoliday(UserLocation userLocation, HolidayDate date);
+        Task<int> RegisterHolidayByIbgeCode(int ibgeCode, HolidayDate date, string name);
+        Task<IEnumerable<HolidayDetailDto>> FindAllHolidaysByIbgeCode(int ibgeCode);
+        Task<HolidayDto?> FindHolidayByIbgeCodeAndDate(int ibgeCode, HolidayDate date);
     }
 }

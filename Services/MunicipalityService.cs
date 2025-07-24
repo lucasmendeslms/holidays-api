@@ -19,9 +19,14 @@ namespace HolidayApi.Services
             _stateService = stateService;
         }
 
+        public async Task<int> FindMunicipalityIdAsync(int ibgeCode)
+        {
+            return await _municipalityRepository.FindMunicipalityIdAsync(ibgeCode);
+        }
+
         public async Task<int> GetMunicipalityIdAsync(int ibgeCode)
         {
-            int municipalityId = await _municipalityRepository.FindMunicipalityIdAsync(ibgeCode);
+            int municipalityId = await FindMunicipalityIdAsync(ibgeCode);
 
             if (municipalityId is not 0)
             {

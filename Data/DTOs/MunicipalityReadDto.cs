@@ -2,8 +2,15 @@ namespace HolidayApi.Data.DTOs
 {
     public class MunicipalityReadDto
     {
-        public required int IbgeCode { get; set; }
-        public required StateDto State { get; set; }
-        public required string Name { get; set; }
+        public int IbgeCode { get; }
+        public string Name { get; }
+        public StateDto State { get; }
+
+        public MunicipalityReadDto(int ibgeCode, string name, StateDto state)
+        {
+            IbgeCode = ibgeCode;
+            Name = name;
+            State = new StateDto(state.IbgeCode, state.StateCode, state.Name);
+        }
     }
 }

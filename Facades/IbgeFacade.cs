@@ -37,14 +37,7 @@ namespace HolidayApi.Facades
                     throw new Exception("Failed to convert the response of Ibge API to JSON | GetIbgeStateAsync");
                 }
 
-                StateDto state = new StateDto
-                {
-                    IbgeCode = modelResponse.Id,
-                    StateCode = modelResponse.StateCode,
-                    Name = modelResponse.Name
-                };
-
-                return state;
+                return new StateDto(modelResponse.Id, modelResponse.StateCode, modelResponse.Name);
 
             }
             catch (Exception e)
@@ -72,17 +65,15 @@ namespace HolidayApi.Facades
                     throw new Exception("Failed to convert the response of Ibge API to JSON | GetIbgeMunicipalityAsync");
                 }
 
-                MunicipalityReadDto municipality = new MunicipalityReadDto
-                {
-                    IbgeCode = modelResponse.Id,
-                    Name = modelResponse.Name,
-                    State = new StateDto
-                    {
-                        IbgeCode = modelResponse.Microregion.Mesoregion.State.Id,
-                        StateCode = modelResponse.Microregion.Mesoregion.State.StateCode,
-                        Name = modelResponse.Microregion.Mesoregion.State.Name
-                    }
-                };
+                MunicipalityReadDto municipality = new MunicipalityReadDto(
+                    modelResponse.Id,
+                    modelResponse.Name,
+                    new StateDto(
+                        modelResponse.Microregion.Mesoregion.State.Id,
+                        modelResponse.Microregion.Mesoregion.State.StateCode,
+                        modelResponse.Microregion.Mesoregion.State.Name
+                    )
+                );
 
                 return municipality;
 

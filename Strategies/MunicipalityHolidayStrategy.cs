@@ -20,12 +20,7 @@ namespace HolidayApi.Strategies
             _municipalityService = municipalityService;
         }
 
-        public async Task<IEnumerable<HolidayDto>> FindAllHolidays(int ibgeCode)
-        {
-            return await _holidayRepository.FindAllMunicipalityHolidays(ibgeCode);
-        }
-
-        public async Task<int> RegisterHoliday(int ibgeCode, HolidayDate date, string name)
+        public async Task<int> RegisterHolidayByIbgeCode(int ibgeCode, HolidayDate date, string name)
         {
             Holiday? holiday = await _holidayRepository.FindMunicipalityHoliday(ibgeCode, date);
 
@@ -42,6 +37,18 @@ namespace HolidayApi.Strategies
             int municipalityId = await _municipalityService.GetMunicipalityIdAsync(ibgeCode);
 
             return await _holidayRepository.SaveMunicipalityHoliday(municipalityId, date, name);
+        }
+
+        public async Task<IEnumerable<HolidayDetailDto>> FindAllHolidaysByIbgeCode(int ibgeCode)
+        {
+            return await _holidayRepository.FindAllMunicipalityHolidaysAsync(ibgeCode);
+        }
+
+        public async Task<HolidayDto?> FindHolidayByIbgeCodeAndDate(int ibgeCode, HolidayDate date)
+        {
+            var holiday = await _holidayRepository.FindMunicipalityHoliday(ibgeCode, date);
+
+            return holiday is not null ? new HolidayDto(holiday.Name) : null;
         }
     }
 }

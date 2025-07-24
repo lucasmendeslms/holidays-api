@@ -1,4 +1,5 @@
 using HolidayApi.Data.DTOs;
+using HolidayApi.Data.Entities;
 using HolidayApi.Strategies;
 using HolidayApi.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
@@ -16,29 +17,11 @@ namespace HolidayApi.Controllers
             _holidayStrategyContext = holidayStrategyContext;
         }
 
-        [HttpGet]
+        [HttpGet("{date}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<HolidayDto>>> FindAllHolidays(int ibgeCode)
-        {
-            IbgeCode validIbgeCode = new IbgeCode(ibgeCode);
-
-            var context = _holidayStrategyContext.SetStrategy(validIbgeCode);
-
-            if (context is null)
-            {
-                throw new Exception();
-            }
-
-            var hollidaysList = await context.FindAllHolidays(validIbgeCode.Id);
-
-            return Ok(hollidaysList);
-        }
-
-
-        [HttpPut("{date}")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<int>> RegisterHoliday(int ibgeCode, string date, [FromBody] string name)
+        public async Task<ActionResult<HolidayDto>> FindHolidayByIbgeCodeAndDate(int ibgeCode, string date)
         {
             IbgeCode validIbgeCode = new IbgeCode(ibgeCode);
             HolidayDate validDate = new HolidayDate(date);
@@ -50,7 +33,46 @@ namespace HolidayApi.Controllers
                 throw new Exception("Failed to recover the strategy context | Holiday Controller");
             }
 
-            return await context.RegisterHoliday(validIbgeCode.Id, validDate, name);
+            var holiday = await context.FindHolidayByIbgeCodeAndDate(validIbgeCode.Id, validDate);
+
+            return holiday is not null ? Ok(holiday) : NotFound();
+        }
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<HolidayDetailDto>>> FindAllHolidaysByIbgeCode(int ibgeCode)
+        {
+            IbgeCode validIbgeCode = new IbgeCode(ibgeCode);
+
+            var context = _holidayStrategyContext.SetStrategy(validIbgeCode);
+
+            if (context is null)
+            {
+                throw new Exception("Failed to recover the strategy context | Holiday Controller");
+            }
+
+            var holidaysList = await context.FindAllHolidaysByIbgeCode(validIbgeCode.Id);
+
+            return Ok(holidaysList);
+        }
+
+
+        [HttpPut("{date}")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public async Task<ActionResult<int>> RegisterHolidayByIbgeCode(int ibgeCode, string date, [FromBody] string name)
+        {
+            IbgeCode validIbgeCode = new IbgeCode(ibgeCode);
+            HolidayDate validDate = new HolidayDate(date);
+
+            var context = _holidayStrategyContext.SetStrategy(validIbgeCode);
+
+            if (context is null)
+            {
+                throw new Exception("Failed to recover the strategy context | Holiday Controller");
+            }
+
+            return await context.RegisterHolidayByIbgeCode(validIbgeCode.Id, validDate, name);
 
             // https://www.linkedin.com/pulse/strategy-pattern-dependency-injection-clean-code-alkiviadis-skoutaris-s0oyf/
 
