@@ -9,5 +9,6 @@ namespace HolidayApi.Strategies
         Task<int> RegisterHolidayByIbgeCode(int ibgeCode, HolidayDate date, string name);
         Task<IEnumerable<HolidayDetailDto>> FindAllHolidaysByIbgeCode(int ibgeCode);
         Task<HolidayDto?> FindHolidayByIbgeCodeAndDate(int ibgeCode, HolidayDate date);
+        Task<bool> DeleteHolidayAsync(int ibgeCode, HolidayDate date);
     }
 }

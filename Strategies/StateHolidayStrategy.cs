@@ -51,5 +51,12 @@ namespace HolidayApi.Strategies
 
             return holiday is not null ? new HolidayDto(holiday.Name) : null;
         }
+
+        public async Task<bool> DeleteHolidayAsync(int ibgeCode, HolidayDate date)
+        {
+            var holiday = await _holidayRepository.FindStateHoliday(ibgeCode, date);
+
+            return holiday is not null ? await _holidayRepository.DeleteHolidayById(holiday.Id) : false;
+        }
     }
 }

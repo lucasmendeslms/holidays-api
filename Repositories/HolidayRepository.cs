@@ -30,6 +30,15 @@ namespace HolidayApi.Repositories
             return StatusCodes.Status500InternalServerError;
         }
 
+        public async Task<bool> DeleteHolidayById(int id)
+        {
+            int affectedRows = await _context.Holiday
+                .Where(h => h.Id == id)
+                .ExecuteDeleteAsync();
+
+            return affectedRows == 1;
+        }
+
         //Municipality
 
         public async Task<IEnumerable<HolidayDetailDto>> FindAllMunicipalityHolidaysAsync(int ibgeCode)
@@ -62,6 +71,30 @@ namespace HolidayApi.Repositories
                     h.Municipality != null &&
                     h.Municipality.IbgeCode == ibgeCode)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<int> SaveMunicipalityHoliday(int municipalityId, HolidayDate date, string name)
+        {
+            try
+            {
+                Holiday holiday = new Holiday
+                {
+                    Name = name,
+                    Day = date.Date.Day,
+                    Month = date.Date.Month,
+                    Type = HolidayType.Municipal,
+                    MunicipalityId = municipalityId
+                };
+
+                await _context.Holiday.AddAsync(holiday);
+                await _context.SaveChangesAsync();
+
+                return StatusCodes.Status201Created;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Failed to save a new holiday | SaveMunicipalityHoliday | {e.Message}");
+            }
         }
 
         //State
@@ -119,30 +152,6 @@ namespace HolidayApi.Repositories
             catch (Exception e)
             {
                 throw new Exception($"Failed to save a new holiday | SaveStateHoliday | {e.Message}");
-            }
-        }
-
-        public async Task<int> SaveMunicipalityHoliday(int municipalityId, HolidayDate date, string name)
-        {
-            try
-            {
-                Holiday holiday = new Holiday
-                {
-                    Name = name,
-                    Day = date.Date.Day,
-                    Month = date.Date.Month,
-                    Type = HolidayType.Municipal,
-                    MunicipalityId = municipalityId
-                };
-
-                await _context.Holiday.AddAsync(holiday);
-                await _context.SaveChangesAsync();
-
-                return StatusCodes.Status201Created;
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"Failed to save a new holiday | SaveMunicipalityHoliday | {e.Message}");
             }
         }
     }
