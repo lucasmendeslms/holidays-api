@@ -1,10 +1,11 @@
 using HolidayApi.Data.DTOs;
+using HolidayApi.ResponseHandler;
 
 namespace HolidayApi.Facades.Interfaces
 {
     public interface IIbgeFacade
     {
-        Task<StateDto> GetIbgeStateAsync(int ibgeCode);
-        Task<MunicipalityReadDto> GetIbgeMunicipalityAsync(int ibgeCode);
+        Task<Result<StateDto>> GetIbgeStateAsync(int ibgeCode);
+        Task<Result<MunicipalityReadDto>> GetIbgeMunicipalityAsync(int ibgeCode);
     }
 }

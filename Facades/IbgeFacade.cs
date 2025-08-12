@@ -1,7 +1,9 @@
 using HolidayApi.Configurations.Settings;
 using HolidayApi.Data.DTOs;
+using HolidayApi.Data.Entities;
 using HolidayApi.Data.ExternalModels;
 using HolidayApi.Facades.Interfaces;
+using HolidayApi.ResponseHandler;
 
 
 namespace HolidayApi.Facades
@@ -19,7 +21,7 @@ namespace HolidayApi.Facades
             _httpClient.BaseAddress = new Uri(_appSettings.ApiSettings.IbgeApi.BaseUrl);
         }
 
-        public async Task<StateDto> GetIbgeStateAsync(int ibgeCode)
+        public async Task<Result<StateDto>> GetIbgeStateAsync(int ibgeCode)
         {
             try
             {
@@ -27,27 +29,26 @@ namespace HolidayApi.Facades
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new Exception("Failed to get a state in Ibge API | GetIbgeStateAsync");
+                    return Result<StateDto>.Failure(Error.IbgeServiceFailure);
                 }
 
-                var modelResponse = await response.Content.ReadFromJsonAsync<StateModelResponse>();
+                var result = await response.Content.ReadFromJsonAsync<StateModelResponse>();
 
-                if (modelResponse is null)
+                if (result is null)
                 {
-                    throw new Exception("Failed to convert the response of Ibge API to JSON | GetIbgeStateAsync");
+                    return Result<StateDto>.Failure(Error.IbgeDeserializationFailure);
                 }
 
-                return new StateDto(modelResponse.Id, modelResponse.StateCode, modelResponse.Name);
-
+                return Result<StateDto>.Success(new StateDto(result.Id, result.StateCode, result.Name));
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception($"Failed to execute the GetIbgeStateAsync function | {e.Message}");
+                return Result<StateDto>.Failure(Error.IbgeServiceUnavailable);
             }
 
         }
 
-        public async Task<MunicipalityReadDto> GetIbgeMunicipalityAsync(int ibgeCode)
+        public async Task<Result<MunicipalityReadDto>> GetIbgeMunicipalityAsync(int ibgeCode)
         {
             try
             {
@@ -55,32 +56,31 @@ namespace HolidayApi.Facades
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new Exception("Failed to get a municipality in Ibge API | GetIbgeMunicipalityAsync");
+                    return Result<MunicipalityReadDto>.Failure(Error.IbgeServiceFailure);
                 }
 
-                var modelResponse = await response.Content.ReadFromJsonAsync<MunicipalityModelResponse>();
+                var result = await response.Content.ReadFromJsonAsync<MunicipalityModelResponse>();
 
-                if (modelResponse is null)
+                if (result is null)
                 {
-                    throw new Exception("Failed to convert the response of Ibge API to JSON | GetIbgeMunicipalityAsync");
+                    return Result<MunicipalityReadDto>.Failure(Error.IbgeDeserializationFailure);
                 }
 
                 MunicipalityReadDto municipality = new MunicipalityReadDto(
-                    modelResponse.Id,
-                    modelResponse.Name,
+                    result.Id,
+                    result.Name,
                     new StateDto(
-                        modelResponse.Microregion.Mesoregion.State.Id,
-                        modelResponse.Microregion.Mesoregion.State.StateCode,
-                        modelResponse.Microregion.Mesoregion.State.Name
+                        result.Microregion.Mesoregion.State.Id,
+                        result.Microregion.Mesoregion.State.StateCode,
+                        result.Microregion.Mesoregion.State.Name
                     )
                 );
 
-                return municipality;
-
+                return Result<MunicipalityReadDto>.Success(municipality);
             }
-            catch (Exception e)
+            catch
             {
-                throw new Exception($"Failed to execute the GetIbgeStateAsync function | {e.Message}");
+                return Result<MunicipalityReadDto>.Failure(Error.IbgeServiceUnavailable);
             }
 
         }

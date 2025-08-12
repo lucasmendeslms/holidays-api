@@ -19,6 +19,16 @@ namespace HolidayApi.Data.DTOs
         {
             return new StateDto(state.IbgeCode, state.StateCode, state.Name);
         }
+
+        public static implicit operator State(StateDto dto)
+        {
+            return new State
+            {
+                Name = dto.Name,
+                IbgeCode = dto.IbgeCode,
+                StateCode = dto.StateCode
+            };
+        }
     }
 
 

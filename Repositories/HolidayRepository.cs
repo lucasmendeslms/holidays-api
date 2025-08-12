@@ -2,6 +2,7 @@ using HolidayApi.Configurations.Database;
 using HolidayApi.Data.DTOs;
 using HolidayApi.Data.Entities;
 using HolidayApi.Repositories.Interfaces;
+using HolidayApi.ResponseHandler;
 using HolidayApi.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,12 +23,10 @@ namespace HolidayApi.Repositories
             {
                 found.Name = name;
 
-                await _context.SaveChangesAsync();
-
-                return StatusCodes.Status200OK;
+                return await _context.SaveChangesAsync();
             }
 
-            return StatusCodes.Status500InternalServerError;
+            return -1;
         }
 
         public async Task<bool> DeleteHolidayById(int id)
@@ -41,7 +40,7 @@ namespace HolidayApi.Repositories
 
         //Municipality
 
-        public async Task<IEnumerable<HolidayDetailDto>> FindAllMunicipalityHolidaysAsync(int ibgeCode)
+        public async Task<IEnumerable<HolidayDetailDto>> FindAllMunicipalityHolidays(int ibgeCode)
         {
             var holidays = await _context.Holiday
                 .Join(
@@ -62,15 +61,17 @@ namespace HolidayApi.Repositories
             return holidays;
         }
 
-        public async Task<Holiday?> FindMunicipalityHoliday(int ibgeCode, HolidayDate date)
+        public async Task<Result<Holiday>> FindMunicipalityHoliday(int ibgeCode, HolidayDate date)
         {
-            return await _context.Holiday
+            var holiday = await _context.Holiday
                 .Where(
                     h => h.Day == date.Date.Day &&
                     h.Month == date.Date.Month &&
                     h.Municipality != null &&
                     h.Municipality.IbgeCode == ibgeCode)
                 .FirstOrDefaultAsync();
+
+            return holiday is null ? Result<Holiday>.Failure(Error.HolidayNotFound) : Result<Holiday>.Success(holiday);
         }
 
         public async Task<int> SaveMunicipalityHoliday(int municipalityId, HolidayDate date, string name)
@@ -101,7 +102,7 @@ namespace HolidayApi.Repositories
 
         public async Task<IEnumerable<HolidayDetailDto>> FindAllStateHolidays(int ibgeCode)
         {
-            var holidays = await _context.Holiday
+            return await _context.Holiday
                 .Join(
                     _context.State,
                     holiday => holiday.StateId,
@@ -116,8 +117,6 @@ namespace HolidayApi.Repositories
                     stateHoliday.holiday.Type
                 ))
                 .ToListAsync();
-
-            return holidays.AsEnumerable();
         }
 
         public async Task<Holiday?> FindStateHoliday(int ibgeCode, HolidayDate date)
