@@ -9,11 +9,11 @@ namespace HolidayApi.Repositories.Interfaces
     {
         Task<IEnumerable<HolidayDetailDto>> FindAllStateHolidays(int ibgeCode);
         Task<IEnumerable<HolidayDetailDto>> FindAllMunicipalityHolidays(int ibgeCode);
-        Task<Result<Holiday>> FindMunicipalityHoliday(int ibgeCode, HolidayDate date);
+        Task<Holiday?> FindMunicipalityHoliday(int ibgeCode, HolidayDate date);
         Task<Holiday?> FindStateHoliday(int ibgeCode, HolidayDate date);
         Task<int> UpdateHolidayName(int id, string name);
         Task<int> SaveStateHoliday(int stateId, HolidayDate date, string name);
         Task<int> SaveMunicipalityHoliday(int municipalityId, HolidayDate date, string name);
-        Task<Result<bool>> DeleteHolidayById(int id);
+        Task<int> DeleteHolidayById(int id);
     }
 }

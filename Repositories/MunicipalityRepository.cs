@@ -30,9 +30,10 @@ namespace HolidayApi.Repositories
                 Municipality data = municipality;
 
                 await _context.Municipality.AddAsync(data);
-                await _context.SaveChangesAsync();
 
-                return data.Id;
+                int affectedRows = await _context.SaveChangesAsync();
+
+                return affectedRows == 1 ? data.Id : 0;
             }
             catch (DbUpdateException ex)
             {

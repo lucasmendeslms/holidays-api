@@ -29,4 +29,11 @@ namespace HolidayApi.ResponseHandler
 
         // Assistir a aula do Balta sobre delegates
     }
+
+    public enum OperationTypeCode
+    {
+        Create = 201,
+        Update = 200,
+        Delete = 204
+    }
 }

@@ -34,18 +34,18 @@ namespace HolidayApi.Services
 
         public async Task<Result<int>> GetStateIdAsync(int ibgeCode)
         {
-            var findState = await FindStateIdAsync(ibgeCode);
+            var findStateId = await FindStateIdAsync(ibgeCode);
 
-            if (findState.IsSuccess)
+            if (findStateId.IsSuccess)
             {
-                return findState;
+                return findStateId;
             }
 
             var ibgeResult = await _ibgeFacade.GetIbgeStateAsync(ibgeCode);
 
             return ibgeResult.IsSuccess && ibgeResult.Value is not null ?
                 await SaveState(new StateDto(ibgeResult.Value.IbgeCode, ibgeResult.Value.StateCode, ibgeResult.Value.Name))
-                : Result<int>.Failure(Error.StateNotFound);
+                : Result<int>.Failure(ibgeResult.Error ?? Error.StateNotFound);
         }
     }
 }

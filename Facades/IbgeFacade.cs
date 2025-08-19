@@ -82,7 +82,6 @@ namespace HolidayApi.Facades
             {
                 return Result<MunicipalityReadDto>.Failure(Error.IbgeServiceUnavailable);
             }
-
         }
 
     }
