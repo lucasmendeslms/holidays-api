@@ -25,21 +25,13 @@ namespace HolidayApi.Repositories
 
         public async Task<int> SaveMunicipality(MunicipalityDto municipality)
         {
-            try
-            {
-                Municipality data = municipality;
+            Municipality data = municipality;
 
-                await _context.Municipality.AddAsync(data);
+            await _context.Municipality.AddAsync(data);
 
-                int affectedRows = await _context.SaveChangesAsync();
+            int affectedRows = await _context.SaveChangesAsync();
 
-                return affectedRows == 1 ? data.Id : 0;
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new DbUpdateException(ex.Message);
-            }
-
+            return affectedRows == 1 ? data.Id : 0;
         }
     }
 }

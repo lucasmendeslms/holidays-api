@@ -27,19 +27,11 @@ namespace HolidayApi.Repositories
         {
             State data = state;
 
-            try
-            {
-                await _context.State.AddAsync(data);
+            await _context.State.AddAsync(data);
 
-                int affectedRows = await _context.SaveChangesAsync();
+            int affectedRows = await _context.SaveChangesAsync();
 
-                return affectedRows == 1 ? data.Id : 0;
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new DbUpdateException(ex.Message); ;
-            }
-
+            return affectedRows == 1 ? data.Id : 0;
         }
     }
 }

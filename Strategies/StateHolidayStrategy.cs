@@ -8,7 +8,6 @@ namespace HolidayApi.Strategies
 {
     public class StateHolidayStrategy : IHolidayStrategy
     {
-
         private readonly IHolidayRepository _holidayRepository;
         private readonly IStateService _stateService;
 

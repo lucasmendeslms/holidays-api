@@ -29,7 +29,7 @@ namespace HolidayApi.Services
         {
             int result = await _stateRepository.SaveState(state);
 
-            return result == 1 ? Result<int>.Success(result) : Result<int>.Failure(Error.SaveStateFailed);
+            return result != 0 ? Result<int>.Success(result) : Result<int>.Failure(Error.SaveStateFailed);
         }
 
         public async Task<Result<int>> GetStateIdAsync(int ibgeCode)

@@ -5,7 +5,6 @@ namespace HolidayApi.ResponseHandler
         public static readonly Error HolidayNotFound = new(404, "Holiday not found");
         public static readonly Error StateNotFound = new(404, "State not found");
         public static readonly Error MunicipalityNotFound = new(404, "Municipality not found");
-        // public static readonly Error HolidayDeletionFailed = new(404, "Cannot delete holiday: holiday does not exist");
 
         public static readonly Error HolidayConflict = new(409, "This holiday is already registered.");
 

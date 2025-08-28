@@ -1,4 +1,5 @@
 using HolidayApi.Data.DTOs;
+using HolidayApi.ResponseHandler;
 using HolidayApi.Strategies;
 using HolidayApi.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,7 @@ namespace HolidayApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<HolidayDto>> FindHolidayByIbgeCodeAndDate(int ibgeCode, string date)
+        public async Task<IActionResult> FindHolidayByIbgeCodeAndDate(int ibgeCode, string date)
         {
             IbgeCode validIbgeCode = new IbgeCode(ibgeCode);
             HolidayDate validDate = new HolidayDate(date);
@@ -32,17 +33,13 @@ namespace HolidayApi.Controllers
                 throw new Exception("Failed to recover the strategy context | Holiday Controller");
             }
 
-            var holiday = await context.FindHolidayByIbgeCodeAndDate(validIbgeCode.Id, validDate);
+            var result = await context.FindHolidayByIbgeCodeAndDate(validIbgeCode.Id, validDate);
 
-            return holiday is not null ? Ok(holiday) : NotFound();
+            return result.IsSuccess ?
+                Ok(result.Value)
+                : StatusCode(result.Error!.Code, new { Message = result.Error.Description });
         }
 
-        /// <summary>
-        /// Select all holidays by IBGE code
-        /// </summary>
-        /// <param name="ibgeCode"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -57,15 +54,15 @@ namespace HolidayApi.Controllers
                 throw new Exception("Failed to recover the strategy context | Holiday Controller");
             }
 
-            var holidaysList = await context.FindAllHolidaysByIbgeCode(validIbgeCode.Id);
+            var result = await context.FindAllHolidaysByIbgeCode(validIbgeCode.Id);
 
-            return Ok(holidaysList);
+            return result.IsSuccess ? Ok(result.Value) : StatusCode(result.Error!.Code, new { Message = result.Error.Description });
         }
 
 
         [HttpPut("{date}")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<int>> RegisterHolidayByIbgeCode(int ibgeCode, string date, [FromBody] string name)
+        public async Task<IActionResult> RegisterHolidayByIbgeCode(int ibgeCode, string date, [FromBody] string name)
         {
             IbgeCode validIbgeCode = new IbgeCode(ibgeCode);
             HolidayDate validDate = new HolidayDate(date);
@@ -77,17 +74,20 @@ namespace HolidayApi.Controllers
                 throw new Exception("Failed to recover the strategy context | Holiday Controller");
             }
 
-            return await context.RegisterHolidayByIbgeCode(validIbgeCode.Id, validDate, name);
+            var result = await context.RegisterHolidayByIbgeCode(validIbgeCode.Id, validDate, name);
 
-            // https://www.linkedin.com/pulse/strategy-pattern-dependency-injection-clean-code-alkiviadis-skoutaris-s0oyf/
+            if (result.IsFailure)
+            {
+                return StatusCode(result.Error!.Code, new { Message = result.Error.Description });
+            }
 
-            // https://dev.to/davidkroell/strategy-design-pattern-with-dependency-injection-7ba
+            return result.Value == (int)OperationTypeCode.Create ? Created() : Ok();
         }
 
         [HttpDelete("{date}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IResult> DeleteHolidayAsync(int ibgeCode, string date)
+        public async Task<IActionResult> DeleteHolidayAsync(int ibgeCode, string date)
         {
             IbgeCode validIbgeCode = new IbgeCode(ibgeCode);
             HolidayDate validDate = new HolidayDate(date);
@@ -99,14 +99,9 @@ namespace HolidayApi.Controllers
                 throw new Exception("Failed to recover the strategy context | Holiday Controller");
             }
 
-            return await context.DeleteHolidayAsync(validIbgeCode.Id, validDate) ? TypedResults.NoContent() : TypedResults.NotFound();
+            var result = await context.DeleteHolidayAsync(validIbgeCode.Id, validDate);
+
+            return result.IsSuccess ? NoContent() : StatusCode(result.Error!.Code, new { Message = result.Error.Description });
         }
-
-        /*
-        https://www.linkedin.com/pulse/net-como-implementar-o-result-pattern-leonardo-ferreira-xnnvf/
-        https://pathbit.medium.com/simplifique-o-controle-de-erros-com-o-result-pattern-no-net-bf35a0cd1b14
-        https://www.milanjovanovic.tech/blog/functional-error-handling-in-dotnet-with-the-result-pattern
-        */
     }
-
 }

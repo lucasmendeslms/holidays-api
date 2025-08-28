@@ -24,10 +24,6 @@ namespace HolidayApi.ResponseHandler
         {
             return IsSuccess ? nextOperation(Value!) : Result<U>.Failure(Error!);
         }
-
-        // https://www.tutorialsteacher.com/csharp/csharp-delegates
-
-        // Assistir a aula do Balta sobre delegates
     }
 
     public enum OperationTypeCode
