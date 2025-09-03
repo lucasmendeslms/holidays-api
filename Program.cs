@@ -31,11 +31,3 @@ app.MapControllers();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.Run();
-
-
-
-
-/*
-    Implementar o padrão Strategy neste projeto
-    https://refactoring.guru/pt-br/design-patterns/strategy
-*/

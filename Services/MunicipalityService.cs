@@ -2,6 +2,7 @@ using HolidayApi.Data.DTOs;
 using HolidayApi.Data.Entities;
 using HolidayApi.Facades.Interfaces;
 using HolidayApi.Repositories.Interfaces;
+using HolidayApi.ResponseHandler;
 using HolidayApi.Services.Interfaces;
 
 namespace HolidayApi.Services
@@ -19,30 +20,44 @@ namespace HolidayApi.Services
             _stateService = stateService;
         }
 
-        public async Task<int> FindMunicipalityIdAsync(int ibgeCode)
+        public async Task<Result<int>> FindMunicipalityIdAsync(int ibgeCode)
         {
-            return await _municipalityRepository.FindMunicipalityIdAsync(ibgeCode);
+            int result = await _municipalityRepository.FindMunicipalityIdAsync(ibgeCode);
+
+            return result != 0 ? Result<int>.Success(result) : Result<int>.Failure(Error.MunicipalityNotFound);
         }
 
-        public async Task<int> GetMunicipalityIdAsync(int ibgeCode)
+        public async Task<Result<int>> GetMunicipalityIdAsync(int ibgeCode)
         {
-            int municipalityId = await FindMunicipalityIdAsync(ibgeCode);
+            var findMunicipalityId = await FindMunicipalityIdAsync(ibgeCode);
 
-            if (municipalityId is not 0)
+            if (findMunicipalityId.IsSuccess)
             {
-                return municipalityId;
+                return findMunicipalityId;
             }
 
-            MunicipalityReadDto ibgeApiResponse = await _ibgeFacade.GetIbgeMunicipalityAsync(ibgeCode);
+            var ibgeResult = await _ibgeFacade.GetIbgeMunicipalityAsync(ibgeCode);
 
-            int stateId = await _stateService.FindStateIdAsync(ibgeApiResponse.State.IbgeCode);
-
-            if (stateId is 0)
+            if (ibgeResult.IsFailure || ibgeResult.Value is null)
             {
-                stateId = await _stateService.SaveState(ibgeApiResponse.State);
+                return Result<int>.Failure(ibgeResult.Error ?? Error.MunicipalityNotFound);
             }
 
-            return await _municipalityRepository.SaveMunicipality(new MunicipalityDto(ibgeApiResponse.Name, ibgeApiResponse.IbgeCode, stateId));
+            var getStateId = await _stateService.FindStateIdAsync(ibgeResult.Value.State.IbgeCode);
+
+            if (getStateId.IsFailure)
+            {
+                getStateId = await _stateService.SaveState(ibgeResult.Value.State);
+            }
+
+            if (getStateId.IsFailure)
+            {
+                return Result<int>.Failure(getStateId.Error!);
+            }
+
+            var result = await _municipalityRepository.SaveMunicipality(new MunicipalityDto(ibgeResult.Value.Name, ibgeResult.Value.IbgeCode, getStateId.Value));
+
+            return result != 0 ? Result<int>.Success(result) : Result<int>.Failure(Error.MunicipalityNotFound);
         }
     }
 }

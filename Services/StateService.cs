@@ -2,6 +2,7 @@ using HolidayApi.Data.DTOs;
 using HolidayApi.Data.Entities;
 using HolidayApi.Facades.Interfaces;
 using HolidayApi.Repositories.Interfaces;
+using HolidayApi.ResponseHandler;
 using HolidayApi.Services.Interfaces;
 
 namespace HolidayApi.Services
@@ -17,28 +18,34 @@ namespace HolidayApi.Services
             _ibgeFacade = ibgeFacade;
         }
 
-        public async Task<int> FindStateIdAsync(int ibgeCode)
+        public async Task<Result<int>> FindStateIdAsync(int ibgeCode)
         {
-            return await _stateRepository.FindStateIdAsync(ibgeCode);
+            int result = await _stateRepository.FindStateIdAsync(ibgeCode);
+
+            return result != 0 ? Result<int>.Success(result) : Result<int>.Failure(Error.StateNotFound);
         }
 
-        public async Task<int> SaveState(StateDto state)
+        public async Task<Result<int>> SaveState(StateDto state)
         {
-            return await _stateRepository.SaveState(state);
+            int result = await _stateRepository.SaveState(state);
+
+            return result != 0 ? Result<int>.Success(result) : Result<int>.Failure(Error.SaveStateFailed);
         }
 
-        public async Task<int> GetStateIdAsync(int ibgeCode)
+        public async Task<Result<int>> GetStateIdAsync(int ibgeCode)
         {
-            int stateId = await FindStateIdAsync(ibgeCode);
+            var findStateId = await FindStateIdAsync(ibgeCode);
 
-            if (stateId is not 0)
+            if (findStateId.IsSuccess)
             {
-                return stateId;
+                return findStateId;
             }
 
-            StateDto ibgeApiResponse = await _ibgeFacade.GetIbgeStateAsync(ibgeCode);
+            var ibgeResult = await _ibgeFacade.GetIbgeStateAsync(ibgeCode);
 
-            return await SaveState(ibgeApiResponse);
+            return ibgeResult.IsSuccess && ibgeResult.Value is not null ?
+                await SaveState(new StateDto(ibgeResult.Value.IbgeCode, ibgeResult.Value.StateCode, ibgeResult.Value.Name))
+                : Result<int>.Failure(ibgeResult.Error ?? Error.StateNotFound);
         }
     }
 }

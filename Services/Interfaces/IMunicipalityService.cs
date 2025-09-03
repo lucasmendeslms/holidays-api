@@ -1,8 +1,10 @@
+using HolidayApi.ResponseHandler;
+
 namespace HolidayApi.Services.Interfaces
 {
     public interface IMunicipalityService
     {
-        Task<int> GetMunicipalityIdAsync(int ibgeCode);
-        Task<int> FindMunicipalityIdAsync(int ibgeCode);
+        Task<Result<int>> GetMunicipalityIdAsync(int ibgeCode);
+        Task<Result<int>> FindMunicipalityIdAsync(int ibgeCode);
     }
 }

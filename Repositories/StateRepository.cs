@@ -25,25 +25,13 @@ namespace HolidayApi.Repositories
 
         public async Task<int> SaveState(StateDto state)
         {
-            try
-            {
-                State data = new State
-                {
-                    Name = state.Name,
-                    IbgeCode = state.IbgeCode,
-                    StateCode = state.StateCode
-                };
+            State data = state;
 
-                await _context.State.AddAsync(data);
-                await _context.SaveChangesAsync();
+            await _context.State.AddAsync(data);
 
-                return data.Id;
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new DbUpdateException(ex.Message);
-            }
+            int affectedRows = await _context.SaveChangesAsync();
 
+            return affectedRows == 1 ? data.Id : 0;
         }
     }
 }

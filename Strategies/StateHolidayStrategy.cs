@@ -1,7 +1,6 @@
 using HolidayApi.Data.DTOs;
-using HolidayApi.Data.Entities;
-using HolidayApi.Facades.Interfaces;
 using HolidayApi.Repositories.Interfaces;
+using HolidayApi.ResponseHandler;
 using HolidayApi.Services.Interfaces;
 using HolidayApi.ValueObjects;
 
@@ -9,7 +8,6 @@ namespace HolidayApi.Strategies
 {
     public class StateHolidayStrategy : IHolidayStrategy
     {
-
         private readonly IHolidayRepository _holidayRepository;
         private readonly IStateService _stateService;
 
@@ -21,42 +19,60 @@ namespace HolidayApi.Strategies
             _stateService = stateService;
         }
 
-        public async Task<int> RegisterHolidayByIbgeCode(int ibgeCode, HolidayDate date, string name)
+        public async Task<Result<int>> RegisterHolidayByIbgeCode(int ibgeCode, HolidayDate date, string name)
         {
-            Holiday? holiday = await _holidayRepository.FindStateHoliday(ibgeCode, date);
+            var holiday = await _holidayRepository.FindStateHoliday(ibgeCode, date);
 
             if (holiday is not null)
             {
                 if (holiday.Name != name)
                 {
-                    return await _holidayRepository.UpdateHolidayName(holiday.Id, name);
+                    var updateResult = await _holidayRepository.UpdateHolidayName(holiday.Id, name);
+
+                    return updateResult == 1 ? Result<int>.Success((int)OperationTypeCode.Update) : Result<int>.Failure(Error.HolidayUpdateFailed);
                 }
 
-                return StatusCodes.Status200OK;
+                return Result<int>.Failure(Error.HolidayConflict);
             }
 
-            int stateId = await _stateService.GetStateIdAsync(ibgeCode);
+            var stateId = await _stateService.GetStateIdAsync(ibgeCode);
 
-            return await _holidayRepository.SaveStateHoliday(stateId, date, name);
+            if (stateId.IsFailure)
+            {
+                return stateId;
+            }
+
+            int result = await _holidayRepository.SaveStateHoliday(stateId.Value, date, name);
+
+            return result == 1 ? Result<int>.Success((int)OperationTypeCode.Create) : Result<int>.Failure(Error.SaveHolidayFailed);
         }
 
-        public async Task<IEnumerable<HolidayDetailDto>> FindAllHolidaysByIbgeCode(int ibgeCode)
+        public async Task<Result<IEnumerable<HolidayDetailDto>>> FindAllHolidaysByIbgeCode(int ibgeCode)
         {
-            return await _holidayRepository.FindAllStateHolidays(ibgeCode);
+            var result = await _holidayRepository.FindAllStateHolidays(ibgeCode);
+
+            return result.Any() ? Result<IEnumerable<HolidayDetailDto>>.Success(result) : Result<IEnumerable<HolidayDetailDto>>.Failure(Error.HolidayNotFound);
         }
 
-        public async Task<HolidayDto?> FindHolidayByIbgeCodeAndDate(int ibgeCode, HolidayDate date)
+        public async Task<Result<HolidayDto>> FindHolidayByIbgeCodeAndDate(int ibgeCode, HolidayDate date)
+        {
+            var result = await _holidayRepository.FindStateHoliday(ibgeCode, date);
+
+            return result is not null ? Result<HolidayDto>.Success(new HolidayDto(result.Name)) : Result<HolidayDto>.Failure(Error.HolidayNotFound);
+        }
+
+        public async Task<Result<int>> DeleteHolidayAsync(int ibgeCode, HolidayDate date)
         {
             var holiday = await _holidayRepository.FindStateHoliday(ibgeCode, date);
 
-            return holiday is not null ? new HolidayDto(holiday.Name) : null;
-        }
+            if (holiday is null)
+            {
+                return Result<int>.Failure(Error.HolidayNotFound);
+            }
 
-        public async Task<bool> DeleteHolidayAsync(int ibgeCode, HolidayDate date)
-        {
-            var holiday = await _holidayRepository.FindStateHoliday(ibgeCode, date);
+            int result = await _holidayRepository.DeleteHolidayById(holiday.Id);
 
-            return holiday is not null ? await _holidayRepository.DeleteHolidayById(holiday.Id) : false;
+            return result == 1 ? Result<int>.Success(result) : Result<int>.Failure(Error.DeleteHolidayFailed);
         }
     }
 }
