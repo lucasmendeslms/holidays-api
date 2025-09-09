@@ -28,6 +28,7 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 
-app.UseMiddleware<ErrorHandlingMiddleware>();
+app.UseMiddleware<ErrorHandlingMiddleware>()
+    .UseMiddleware<RequestHandlerMiddleware>();
 
 app.Run();

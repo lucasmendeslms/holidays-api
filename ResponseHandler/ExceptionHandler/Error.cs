@@ -2,6 +2,9 @@ namespace HolidayApi.ResponseHandler
 {
     public sealed record Error(int Code, string Description)
     {
+        public static readonly Error InvalidIbgeCode = new(400, "Invalid ibge code");
+        public static readonly Error InvalidDate = new(400, "Invalid date format. Please use 'YYYY-MM-DD' or 'MM-DD'.");
+
         public static readonly Error HolidayNotFound = new(404, "Holiday not found");
         public static readonly Error StateNotFound = new(404, "State not found");
         public static readonly Error MunicipalityNotFound = new(404, "Municipality not found");

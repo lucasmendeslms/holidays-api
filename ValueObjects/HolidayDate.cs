@@ -1,4 +1,5 @@
 using System.Globalization;
+using HolidayApi.ResponseHandler;
 
 namespace HolidayApi.ValueObjects
 
@@ -8,34 +9,40 @@ namespace HolidayApi.ValueObjects
         public DateOnly Date { get; }
         public string DateString { get; }
 
-        public HolidayDate(string date)
+        private HolidayDate(DateOnly date, string dateString)
         {
-            Date = ParseDate(date);
-            DateString = date;
+            Date = date;
+            DateString = dateString;
         }
 
-        public HolidayDate(int month, int day)
+        public static Result<HolidayDate> Create(string date)
+        {
+            var validationResult = ValidateDate(date);
+
+            return validationResult.IsSuccess
+                ? Result<HolidayDate>.Success(new HolidayDate(validationResult.Value, date))
+                : Result<HolidayDate>.Failure(validationResult.Error!);
+        }
+
+        public static Result<HolidayDate> Create(int month, int day)
         {
             string formatted = $"{month:D2}-{day:D2}";
-            Date = ParseDate(formatted);
-            DateString = formatted;
+            return Create(formatted);
         }
 
-        private static DateOnly ParseDate(string date)
+        private static Result<DateOnly> ValidateDate(string date)
         {
             if (DateOnly.TryParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var fullDate))
             {
-                return fullDate;
+                return Result<DateOnly>.Success(fullDate);
             }
 
             if (DateOnly.TryParseExact(date, "MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var partialDate))
             {
-                return partialDate;
+                return Result<DateOnly>.Success(partialDate);
             }
 
-            throw new ArgumentException("Formato inválido de data", nameof(date));
+            return Result<DateOnly>.Failure(Error.InvalidDate);
         }
-
-        public override string ToString() => DateString;
     }
 }
