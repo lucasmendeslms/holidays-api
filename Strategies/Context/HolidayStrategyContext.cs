@@ -1,4 +1,5 @@
-using HolidayApi.ValueObjects;
+using HolidayApi.ResponseHandler;
+using HolidayApi.Data.ValueObjects;
 
 namespace HolidayApi.Strategies
 {
@@ -11,6 +12,14 @@ namespace HolidayApi.Strategies
             _holidayStrategies = strategies;
         }
 
-        public IHolidayStrategy? SetStrategy(IbgeCode ibgeCode) => _holidayStrategies.FirstOrDefault(s => s.AppliesTo(ibgeCode));
+        public Result<IHolidayStrategy> SetStrategy(IbgeCode ibgeCode)
+        {
+            var context = _holidayStrategies.FirstOrDefault(s => s.AppliesTo(ibgeCode));
+
+            return context is not null
+                ? Result<IHolidayStrategy>.Success(context)
+                : Result<IHolidayStrategy>.Failure(Error.StrategyContextFailed);
+        }
+
     }
 }

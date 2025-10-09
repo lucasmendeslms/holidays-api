@@ -3,13 +3,14 @@ using HolidayApi.Data.DTOs;
 using HolidayApi.Data.Entities;
 using HolidayApi.Repositories.Interfaces;
 using HolidayApi.ResponseHandler;
-using HolidayApi.ValueObjects;
+using HolidayApi.Data.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace HolidayApi.Repositories
 {
     public class HolidayRepository : IHolidayRepository
     {
+        private const int NO_ROWS_AFFECTED = 0;
         private readonly ApplicationDbContext _context;
 
         public HolidayRepository(ApplicationDbContext context)
@@ -26,7 +27,7 @@ namespace HolidayApi.Repositories
                 return await _context.SaveChangesAsync();
             }
 
-            return -1;
+            return NO_ROWS_AFFECTED;
         }
 
         public async Task<int> DeleteHolidayById(int id)
@@ -82,9 +83,7 @@ namespace HolidayApi.Repositories
             };
 
             await _context.Holiday.AddAsync(holiday);
-            await _context.SaveChangesAsync();
-
-            return StatusCodes.Status201Created;
+            return await _context.SaveChangesAsync();
         }
 
         //State

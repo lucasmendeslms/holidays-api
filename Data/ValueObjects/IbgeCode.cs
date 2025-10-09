@@ -1,6 +1,6 @@
 using HolidayApi.ResponseHandler;
 
-namespace HolidayApi.ValueObjects
+namespace HolidayApi.Data.ValueObjects
 {
     public class IbgeCode
     {

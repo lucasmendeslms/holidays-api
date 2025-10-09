@@ -6,13 +6,16 @@ namespace HolidayApi.Configurations.Database
 {
     public class StateConfiguration : IEntityTypeConfiguration<State>
     {
+        private const int MAX_NAME_LENGTH = 200;
+        private const int MAX_STATE_CODE_LENGTH = 2;
+
         public void Configure(EntityTypeBuilder<State> builder)
         {
             builder.ToTable("States");
             builder.HasKey(p => p.Id);
             builder.Property(p => p.Id).ValueGeneratedOnAdd();
-            builder.Property(p => p.Name).HasMaxLength(200).IsRequired();
-            builder.Property(p => p.StateCode).HasMaxLength(2).IsRequired();
+            builder.Property(p => p.Name).HasMaxLength(MAX_NAME_LENGTH).IsRequired();
+            builder.Property(p => p.StateCode).HasMaxLength(MAX_STATE_CODE_LENGTH).IsRequired();
             builder.Property(p => p.IbgeCode).IsRequired();
             builder.HasIndex(p => p.IbgeCode).IsUnique();
             builder.HasMany(p => p.Municipalities).WithOne(m => m.State).HasForeignKey(m => m.StateId);

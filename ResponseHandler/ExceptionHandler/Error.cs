@@ -16,6 +16,7 @@ namespace HolidayApi.ResponseHandler
         public static readonly Error IbgeServiceFailure = new(500, "Failed to retrieve data from IBGE API.");
         public static readonly Error SaveHolidayFailed = new(500, "An error occurred while saving the holiday.");
         public static readonly Error DeleteHolidayFailed = new(500, "An error occurred while deleting the holiday.");
+        public static readonly Error StrategyContextFailed = new(500, "Failed to recover the strategy context");
 
         public static readonly Error IbgeDeserializationFailure = new(502, "Failed to parse the response from IBGE API.");
 

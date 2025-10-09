@@ -11,6 +11,7 @@ namespace HolidayApi.Services
     {
         private readonly IStateRepository _stateRepository;
         private readonly IIbgeFacade _ibgeFacade;
+        private const int NO_ROWS_AFFECTED = 0;
 
         public StateService(IStateRepository stateRepository, IIbgeFacade ibgeFacade)
         {
@@ -22,14 +23,14 @@ namespace HolidayApi.Services
         {
             int result = await _stateRepository.FindStateIdAsync(ibgeCode);
 
-            return result != 0 ? Result<int>.Success(result) : Result<int>.Failure(Error.StateNotFound);
+            return result != NO_ROWS_AFFECTED ? Result<int>.Success(result) : Result<int>.Failure(Error.StateNotFound);
         }
 
         public async Task<Result<int>> SaveState(StateDto state)
         {
             int result = await _stateRepository.SaveState(state);
 
-            return result != 0 ? Result<int>.Success(result) : Result<int>.Failure(Error.SaveStateFailed);
+            return result != NO_ROWS_AFFECTED ? Result<int>.Success(result) : Result<int>.Failure(Error.SaveStateFailed);
         }
 
         public async Task<Result<int>> GetStateIdAsync(int ibgeCode)

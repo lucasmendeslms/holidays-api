@@ -1,5 +1,5 @@
 using HolidayApi.Data.Entities;
-using HolidayApi.ValueObjects;
+using HolidayApi.Data.ValueObjects;
 
 namespace HolidayApi.Data.DTOs
 {

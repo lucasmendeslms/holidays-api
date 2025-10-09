@@ -8,6 +8,8 @@ namespace HolidayApi.Repositories
 {
     public class StateRepository : IStateRepository
     {
+        private const int ONE_ROW_AFFECTED = 1;
+        private const int NO_ROWS_AFFECTED = 0;
         private readonly ApplicationDbContext _context;
 
         public StateRepository(ApplicationDbContext context)
@@ -31,7 +33,7 @@ namespace HolidayApi.Repositories
 
             int affectedRows = await _context.SaveChangesAsync();
 
-            return affectedRows == 1 ? data.Id : 0;
+            return affectedRows == ONE_ROW_AFFECTED ? data.Id : NO_ROWS_AFFECTED;
         }
     }
 }

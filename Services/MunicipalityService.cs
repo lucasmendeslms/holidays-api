@@ -12,6 +12,7 @@ namespace HolidayApi.Services
         private readonly IMunicipalityRepository _municipalityRepository;
         private readonly IIbgeFacade _ibgeFacade;
         private readonly IStateService _stateService;
+        private const int NO_ROWS_AFFECTED = 0;
 
         public MunicipalityService(IMunicipalityRepository municipalityRepository, IIbgeFacade ibgeFacade, IStateService stateService)
         {
@@ -24,7 +25,7 @@ namespace HolidayApi.Services
         {
             int result = await _municipalityRepository.FindMunicipalityIdAsync(ibgeCode);
 
-            return result != 0 ? Result<int>.Success(result) : Result<int>.Failure(Error.MunicipalityNotFound);
+            return result != NO_ROWS_AFFECTED ? Result<int>.Success(result) : Result<int>.Failure(Error.MunicipalityNotFound);
         }
 
         public async Task<Result<int>> GetMunicipalityIdAsync(int ibgeCode)
@@ -57,7 +58,7 @@ namespace HolidayApi.Services
 
             var result = await _municipalityRepository.SaveMunicipality(new MunicipalityDto(ibgeResult.Value.Name, ibgeResult.Value.IbgeCode, getStateId.Value));
 
-            return result != 0 ? Result<int>.Success(result) : Result<int>.Failure(Error.MunicipalityNotFound);
+            return result != NO_ROWS_AFFECTED ? Result<int>.Success(result) : Result<int>.Failure(Error.MunicipalityNotFound);
         }
     }
 }
