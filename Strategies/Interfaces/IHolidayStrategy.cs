@@ -1,6 +1,6 @@
 using HolidayApi.Data.DTOs;
 using HolidayApi.ResponseHandler;
-using HolidayApi.ValueObjects;
+using HolidayApi.Data.ValueObjects;
 
 namespace HolidayApi.Strategies
 {

@@ -1,5 +1,5 @@
 using HolidayApi.Data.Entities;
-using HolidayApi.ValueObjects;
+using HolidayApi.Data.ValueObjects;
 
 namespace HolidayApi.Data.DTOs
 {
@@ -12,7 +12,7 @@ namespace HolidayApi.Data.DTOs
         public HolidayDetailDto(string name, int month, int day, HolidayType type)
         {
             Name = name;
-            Date = new HolidayDate(month, day).DateString;
+            Date = HolidayDate.Create(month, day).Value!.DateString;
             Type = type;
         }
     }

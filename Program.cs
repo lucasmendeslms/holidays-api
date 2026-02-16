@@ -28,6 +28,18 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 
-app.UseMiddleware<ErrorHandlingMiddleware>();
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/")
+    {
+        context.Response.Redirect("/swagger");
+        return;
+    }
+
+    await next();
+});
+
+app.UseMiddleware<ErrorHandlingMiddleware>()
+    .UseMiddleware<RequestHandlerMiddleware>();
 
 app.Run();

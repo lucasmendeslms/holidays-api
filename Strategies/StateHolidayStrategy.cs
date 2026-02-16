@@ -2,12 +2,13 @@ using HolidayApi.Data.DTOs;
 using HolidayApi.Repositories.Interfaces;
 using HolidayApi.ResponseHandler;
 using HolidayApi.Services.Interfaces;
-using HolidayApi.ValueObjects;
+using HolidayApi.Data.ValueObjects;
 
 namespace HolidayApi.Strategies
 {
     public class StateHolidayStrategy : IHolidayStrategy
     {
+        private const int ONE_ROW_AFFECTED = 1;
         private readonly IHolidayRepository _holidayRepository;
         private readonly IStateService _stateService;
 
@@ -29,7 +30,7 @@ namespace HolidayApi.Strategies
                 {
                     var updateResult = await _holidayRepository.UpdateHolidayName(holiday.Id, name);
 
-                    return updateResult == 1 ? Result<int>.Success((int)OperationTypeCode.Update) : Result<int>.Failure(Error.HolidayUpdateFailed);
+                    return updateResult == ONE_ROW_AFFECTED ? Result<int>.Success((int)OperationTypeCode.Update) : Result<int>.Failure(Error.HolidayUpdateFailed);
                 }
 
                 return Result<int>.Failure(Error.HolidayConflict);
@@ -44,7 +45,7 @@ namespace HolidayApi.Strategies
 
             int result = await _holidayRepository.SaveStateHoliday(stateId.Value, date, name);
 
-            return result == 1 ? Result<int>.Success((int)OperationTypeCode.Create) : Result<int>.Failure(Error.SaveHolidayFailed);
+            return result == ONE_ROW_AFFECTED ? Result<int>.Success((int)OperationTypeCode.Create) : Result<int>.Failure(Error.SaveHolidayFailed);
         }
 
         public async Task<Result<IEnumerable<HolidayDetailDto>>> FindAllHolidaysByIbgeCode(int ibgeCode)
@@ -72,7 +73,7 @@ namespace HolidayApi.Strategies
 
             int result = await _holidayRepository.DeleteHolidayById(holiday.Id);
 
-            return result == 1 ? Result<int>.Success(result) : Result<int>.Failure(Error.DeleteHolidayFailed);
+            return result == ONE_ROW_AFFECTED ? Result<int>.Success(result) : Result<int>.Failure(Error.DeleteHolidayFailed);
         }
     }
 }

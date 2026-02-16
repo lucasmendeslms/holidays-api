@@ -1,7 +1,7 @@
 using HolidayApi.Data.DTOs;
 using HolidayApi.Data.Entities;
 using HolidayApi.ResponseHandler;
-using HolidayApi.ValueObjects;
+using HolidayApi.Data.ValueObjects;
 
 namespace HolidayApi.Repositories.Interfaces
 {

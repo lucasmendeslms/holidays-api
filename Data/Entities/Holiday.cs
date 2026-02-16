@@ -1,8 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace HolidayApi.Data.Entities
 {
     public class Holiday
     {
         public int Id { get; }
+
+        [MaxLength(200)]
         public required string Name { get; set; }
         public int Day { get; set; }
         public int Month { get; set; }
